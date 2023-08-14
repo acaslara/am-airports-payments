@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.am.airports</groupId>
+    <artifactId>am-airports-payments</artifactId>
+    <packaging>war</packaging>
+    <version>0.0.7</version>
+    <name>am-airports-payments</name>
+    
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- JBoss dependency versions -->
+        <version.wildfly.maven.plugin>1.0.2.Final</version.wildfly.maven.plugin>
+        <!-- other plugin versions -->
+        <version.war.plugin>2.5</version.war.plugin>
+        <slf4j.version>1.7.25</slf4j.version>
+        <!-- maven-compiler-plugin -->
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <gson.version>2.4</gson.version>
+        <mongodb.version>3.4.1</mongodb.version>
+        <resteasy.version>3.0.11.Final</resteasy.version>
+        <sabre.api.version>0.0.3-SNAPSHOT</sabre.api.version>
+    </properties>
+
+
+    <repositories>
+    
+    	<repository>
+			<id>jboss-public-repository-group</id>
+			<url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
+		</repository>
+    
+        <repository>
+            <id>jboss</id>
+            <name>JBoss Maven2 repository</name>
+            <url>http://repository.jboss.com/maven2/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+        
+    </repositories>
+
+
+<!-- Necsaria para la spruebas unitariaos con Arquillian -->
+	<dependencyManagement>
+		<dependencies>
+		    <dependency>
+		        <groupId>org.jboss.arquillian</groupId>
+		        <artifactId>arquillian-bom</artifactId>
+		        <version>1.1.5.Final</version>
+		        <scope>import</scope>
+		        <type>pom</type>
+		    </dependency>
+		    <dependency>
+		        <groupId>org.jboss.shrinkwrap.resolver</groupId>
+		        <artifactId>shrinkwrap-resolver-bom</artifactId>
+		        <version>2.1.1</version>
+		        <type>pom</type>
+		        <scope>import</scope>
+		    </dependency>
+		    <dependency>
+		        <groupId>org.jboss.arquillian.extension</groupId>
+		        <artifactId>arquillian-drone-bom</artifactId>
+		        <version>1.3.1.Final</version>
+		        <type>pom</type>
+		        <scope>import</scope>
+		    </dependency>
+		</dependencies>
+    </dependencyManagement>
+
+
+    <dependencies>  
+		<dependency>
+		    <groupId>org.modelmapper</groupId>
+		    <artifactId>modelmapper</artifactId>
+		    <version>3.1.0</version>
+		</dependency>
+
+
+<!--     Necesarios para pruebas unitarias con Arquillian	 -->
+    	<dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>7.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
+        
+        <dependency>
+		    <groupId>org.jboss.shrinkwrap.resolver</groupId>
+		    <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
+		    <scope>test</scope>
+		</dependency>
+        
+        <dependency>
+            <groupId>org.jboss.arquillian.junit</groupId>
+            <artifactId>arquillian-junit-container</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.shrinkwrap.resolver</groupId>
+            <artifactId>shrinkwrap-resolver-depchain</artifactId>
+            <type>pom</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.arquillian.extension</groupId>
+            <artifactId>arquillian-drone-webdriver-depchain</artifactId>
+            <type>pom</type>
+            <scope>test</scope>
+        </dependency>
+
+		<dependency>
+			<groupId>org.wildfly.arquillian</groupId>
+			<artifactId>wildfly-arquillian-container-embedded</artifactId>
+			<version>2.0.0.Final</version>
+			<scope>test</scope>
+		</dependency>
+        
+		
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>${gson.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-validator-provider-11</artifactId>
+            <version>${resteasy.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-client</artifactId>
+            <version>${resteasy.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+        	<groupId>org.jboss.resteasy</groupId>
+        	<artifactId>resteasy-servlet-initializer</artifactId>
+        	<version>${resteasy.version}</version>
+        	<scope>provided</scope>
+        	<exclusions>
+            	<exclusion>
+                	<artifactId>resteasy-jaxrs</artifactId>
+                	<groupId>org.jboss.resteasy</groupId>
+            	</exclusion>
+        	</exclusions>
+    	</dependency>
+        
+        <dependency>
+            <groupId>org.slf4j</groupId>
+			<artifactId>slf4j-jdk14</artifactId>
+            <version>${slf4j.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-web-api</artifactId>
+            <version>7.0</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>4.0.2.GA</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongo-java-driver</artifactId>
+            <version>${mongodb.version}</version>
+        </dependency>
+        
+        <!-- SabreAPI dependencies - START -->
+        <dependency>
+            <groupId>com.am.sabre</groupId>
+            <artifactId>WSSabreAPI-Session</artifactId>
+            <version>${sabre.api.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.am.sabre</groupId>
+            <artifactId>WSSabreAPI-SessionPool</artifactId>
+            <version>${sabre.api.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.am.sabre</groupId>
+            <artifactId>WSSabreAPI-ContextChange</artifactId>
+            <version>${sabre.api.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.am.sabre</groupId>
+            <artifactId>WSSabreAPI-GetReservation</artifactId>
+            <version>${sabre.api.version}</version>
+        </dependency>        
+        
+        <dependency>
+            <groupId>com.am.sabre</groupId>
+            <artifactId>WSSabreAPI-TripSearch</artifactId>
+            <version>${sabre.api.version}</version>
+        </dependency>
+	
+        <dependency>
+            <groupId>com.am.sabre</groupId>
+            <artifactId>WSSabreAPI-SabreCommand</artifactId>
+            <version>${sabre.api.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.am.sabre</groupId>
+            <artifactId>WSSabreAPI-UpdateReservation</artifactId>
+            <version>${sabre.api.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.am.sabre</groupId>
+            <artifactId>WSSabreAPI-MISCService</artifactId>
+            <version>${sabre.api.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.am.sabre</groupId>
+            <artifactId>WSSabreAPI-TicketDoc</artifactId>
+            <version>${sabre.api.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.am.sabre</groupId>
+            <artifactId>WSSabreAPI-AirTicket</artifactId>
+            <version>${sabre.api.version}</version>
+        </dependency>       
+               
+        <dependency>
+            <groupId>com.am.sabre</groupId>
+            <artifactId>WSSabreAPI-DesignatePrinter</artifactId>
+            <version>${sabre.api.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.am.sabre</groupId>
+            <artifactId>WSSabreAPI-PriceQuote</artifactId>
+            <version>${sabre.api.version}</version>
+        </dependency>
+		       
+        <dependency>
+            <groupId>com.am.sabre</groupId>
+            <artifactId>WSSabreAPI-EndTransaction</artifactId>
+            <version>${sabre.api.version}</version>
+        </dependency>        
+        
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.4</version>
+        </dependency>               
+        
+        <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.6</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.6</version>
+        </dependency>
+        
+        <!-- https://mvnrepository.com/artifact/org.apache.poi/poi -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>3.17</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>3.17</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+            <version>1.5</version>
+        </dependency>
+     
+    </dependencies>
+
+    <build>
+        <!-- Maven will append the version to the finalName (which is the name 
+        given to the generated war, and hence the context root) -->
+        <finalName>am-airports-payments</finalName>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+            </testResource>
+            <testResource>
+                <directory>src/main/webapp</directory>
+            </testResource>
+        </testResources>
+
+        <plugins>
+
+			  <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+
+			
+            <plugin>	
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>templating-maven-plugin</artifactId>
+                <version>1.0.0</version>
+                <executions>
+                    <execution>
+                        <id>generate-verion-class</id>
+                        <goals>
+                            <goal>filter-sources</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.12</version>
+				<configuration>
+				    <systemProperties>
+				        <property>
+				            <name>java.util.logging.manager</name>
+				            <value>org.jboss.logmanager.LogManager</value>
+				        </property>
+				    </systemProperties>
+				    <argLine>-Xmx512m -XX:MaxMetaspaceSize=256m -Djava.util.logging.manager=org.jboss.logmanager.LogManager -Djboss.socket.binding.port-offset=100</argLine>
+				</configuration>
+			</plugin>
+            <!-- The WildFly plugin deploys your war to a local WildFly container -->
+            <!-- To use, run: mvn package wildfly:deploy -->
+            <plugin>
+                <groupId>org.wildfly.plugins</groupId>
+                <artifactId>wildfly-maven-plugin</artifactId>
+                <version>${version.wildfly.maven.plugin}</version>
+            </plugin>
+        </plugins>
+    </build>
+	
+    <distributionManagement>
+      <repository>
+          <id>releases</id>
+          <name>Aeromexico' Releases Repository</name>
+          <url>https://repo.amlab7.com/repository/maven-releases</url>
+      </repository>
+      <snapshotRepository>
+          <id>snapshots</id>
+          <name>Aeromexico' Snapshots Repository</name>
+          <url>https://repo.amlab7.com/repository/maven-snapshots</url>
+      </snapshotRepository>
+    </distributionManagement>
+
+</project>
