@@ -5,12 +5,23 @@ name: veracode-scan-java
    branches: develop
     types: [assigned, opened, synchronize, reopened]
    
+name: veracode-scan-java
+on: 
+   pull_request:
+     types: [opened, edited]
+      branches:
+     - develop
+    
+     workflow_dispatch:
+     
 defaults:
   run:
     shell: bash
     working-directory: .
+
 env:
   APP_NAME: ${{ github.repository }}
+
 jobs:
   sast-sca-scan:
     runs-on: ubuntu-latest
