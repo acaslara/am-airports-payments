@@ -1,8 +1,11 @@
 name: veracode-scan-java
-on: 
-   pull_request:
-      branches:
-     - develop
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
      
      workflow_dispatch:
      
