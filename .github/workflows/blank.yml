@@ -1,10 +1,9 @@
 name: veracode-scan-java
  on:
-  workflow_dispatch:
-  pull_request:
+   pull_request:
    branches: develop
     types: [assigned, opened, synchronize, reopened]
-   
+   workflow_dispatch:
 name: veracode-scan-java
 on: 
    pull_request:
